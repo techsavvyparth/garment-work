@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -28,6 +29,14 @@ app.use('/api/reports', reportRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok', db: 'JSON File (Demo Mode)', timestamp: new Date() }));
 
+// Serve static assets in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+  });
+}
+
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({ success: false, message: err.message || 'Server error' });
@@ -44,4 +53,11 @@ app.listen(PORT, () => {
   console.log('');
   console.log('👤 Register at: http://localhost:5173/register');
   console.log('');
+
+  // Auto-seed database if empty
+  try {
+    require('./utils/seed');
+  } catch (err) {
+    console.error('Error auto-seeding database:', err);
+  }
 });

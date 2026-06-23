@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "description": "Ladies Work Management System - MERN + PWA",
   "scripts": {
-    "install:all": "cd backend && npm install && cd ../frontend && npm install",
-    "dev:backend": "cd backend && npm run dev",
-    "dev:frontend": "cd frontend && npm run dev",
-    "build": "cd frontend && npm run build",
-    "seed": "cd backend && npm run seed"
+    "install:all": "npm install --prefix backend && npm install --prefix frontend",
+    "build": "npm run install:all && npm run build:frontend",
+    "build:frontend": "npm run build --prefix frontend",
+    "start": "node backend/server.js",
+    "seed": "npm run seed --prefix backend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend"
   }
 }
