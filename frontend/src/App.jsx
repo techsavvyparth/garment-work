@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import { Layout } from './components/layout/Layout';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -16,7 +17,7 @@ import { Spinner } from './components/ui';
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   if (loading) return (
-    <div className="min-h-screen bg-[#0F0A1E] flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-app-bg transition-colors duration-300">
       <div className="text-center">
         <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center mx-auto mb-3 animate-pulse">
           <span className="text-white font-bold">LW</span>
@@ -55,25 +56,27 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AppRoutes />
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 3000,
-            style: {
-              background: 'rgba(15, 10, 30, 0.95)',
-              color: '#e2e8f0',
-              border: '1px solid rgba(124, 58, 237, 0.3)',
-              borderRadius: '12px',
-              backdropFilter: 'blur(12px)',
-              fontSize: '13px',
-            },
-            success: { iconTheme: { primary: '#10B981', secondary: '#fff' } },
-            error: { iconTheme: { primary: '#EF4444', secondary: '#fff' } },
-          }}
-        />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AppRoutes />
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                background: 'rgba(15, 10, 30, 0.95)',
+                color: '#e2e8f0',
+                border: '1px solid rgba(124, 58, 237, 0.3)',
+                borderRadius: '12px',
+                backdropFilter: 'blur(12px)',
+                fontSize: '13px',
+              },
+              success: { iconTheme: { primary: '#10B981', secondary: '#fff' } },
+              error: { iconTheme: { primary: '#EF4444', secondary: '#fff' } },
+            }}
+          />
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }
