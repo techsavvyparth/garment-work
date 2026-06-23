@@ -21,13 +21,13 @@ app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-app.use('/api/auth', authRoutes);
-app.use('/api/ladies', ladiesRoutes);
-app.use('/api/work', workRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/reports', reportRoutes);
+app.use(['/api/auth', '/auth'], authRoutes);
+app.use(['/api/ladies', '/ladies'], ladiesRoutes);
+app.use(['/api/work', '/work'], workRoutes);
+app.use(['/api/payments', '/payments'], paymentRoutes);
+app.use(['/api/reports', '/reports'], reportRoutes);
 
-app.get('/api/health', (req, res) => res.json({ status: 'ok', db: 'JSON File (Demo Mode)', timestamp: new Date() }));
+app.get(['/api/health', '/health'], (req, res) => res.json({ status: 'ok', db: 'JSON File (Demo Mode)', timestamp: new Date() }));
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
