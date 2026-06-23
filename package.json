@@ -1,0 +1,12 @@
+{
+  "name": "ladies-work-system",
+  "version": "1.0.0",
+  "description": "Ladies Work Management System - MERN + PWA",
+  "scripts": {
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "seed": "cd backend && npm run seed"
+  }
+}
