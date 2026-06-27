@@ -52,7 +52,7 @@ export default function LoginPage() {
             <Input
               label="Email Address"
               type="email"
-              placeholder="admin@example.com"
+              placeholder="admin@gmail.com"
               value={form.email}
               onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))}
               autoComplete="email"

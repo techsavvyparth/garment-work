@@ -203,10 +203,10 @@ export default function SettingsPage() {
             </div>
             <div className="grid grid-cols-2 gap-3 text-xs">
               {[
-                ['Tech Stack', 'MERN + PWA'],
+                ['Tech Stack', 'Node + React + PWA'],
                 ['Frontend', 'React + Vite + Tailwind'],
                 ['Backend', 'Node.js + Express'],
-                ['Database', 'MongoDB Atlas'],
+                ['Database', 'JSON File DB'],
                 ['Auth', 'JWT + bcrypt'],
                 ['Offline', 'IndexedDB + SW'],
               ].map(([k, v]) => (

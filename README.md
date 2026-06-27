@@ -1,6 +1,6 @@
 # 👗 Ladies Work Management System
 
-A professional, production-ready **MERN Stack + PWA** application for managing piece-work / job-work for lady workers in garment, textile, and similar industries.
+A professional, production-ready **Node + React + PWA** application (with local JSON file storage) for managing piece-work / job-work for lady workers in garment, textile, and similar industries.
 
 ---
 
@@ -28,7 +28,7 @@ A professional, production-ready **MERN Stack + PWA** application for managing p
 ```
 Frontend:   React 18 + Vite + Tailwind CSS v4
 Backend:    Node.js + Express.js
-Database:   MongoDB Atlas (or local MongoDB)
+Database:   JSON File Database (no MongoDB required)
 Auth:       JWT + bcrypt
 Charts:     Recharts
 PDF:        jsPDF + jsPDF-AutoTable
@@ -43,7 +43,6 @@ PWA:        Web App Manifest + SW
 
 ### Prerequisites
 - Node.js 18+
-- MongoDB Atlas account (or local MongoDB)
 
 ---
 
@@ -72,7 +71,6 @@ cp .env.example .env
 Edit `.env`:
 ```env
 PORT=5000
-MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/ladies-work-system
 JWT_SECRET=your-super-secret-key-change-this
 FRONTEND_URL=http://localhost:5173
 NODE_ENV=development
@@ -121,7 +119,7 @@ Frontend runs at: **http://localhost:5173**
 ### Step 4: First Login
 
 After seeding (`npm run seed` in backend):
-- **Email:** `admin@example.com`
+- **Email:** `admin@gmail.com`
 - **Password:** `admin123`
 
 Or register a new account at `/register`.
@@ -133,11 +131,6 @@ Or register a new account at `/register`.
 ```
 ladies-work-system/
 ├── backend/
-│   ├── models/
-│   │   ├── User.js          # Admin user schema
-│   │   ├── Lady.js          # Worker schema
-│   │   ├── Work.js          # Work entry schema
-│   │   └── Payment.js       # Payment schema
 │   ├── routes/
 │   │   ├── auth.js          # Login, register, profile
 │   │   ├── ladies.js        # CRUD for ladies
@@ -277,15 +270,9 @@ Set environment variable: `VITE_API_URL=https://your-backend.com/api`
 ```bash
 cd backend
 # Set env vars in hosting dashboard:
-# MONGODB_URI, JWT_SECRET, FRONTEND_URL, NODE_ENV=production
+# JWT_SECRET, FRONTEND_URL, NODE_ENV=production
 npm start
 ```
-
-### MongoDB Atlas
-1. Create free cluster at mongodb.com/atlas
-2. Add database user
-3. Copy connection string to `MONGODB_URI`
-4. Whitelist IP (0.0.0.0/0 for any)
 
 ---
 
@@ -318,4 +305,4 @@ Supports ₹ Indian Rupee formatting throughout.
 ---
 
 **Ladies Work Management System v1.0.0**  
-Built with ❤️ using MERN Stack + PWA
+Built with ❤️ using Node + React + PWA (JSON DB)

@@ -47,7 +47,7 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input label="Your Name *" placeholder="Enter your name" value={form.name} onChange={set('name')} />
             <Input label="Company / Factory Name" placeholder="e.g. Shree Enterprises" value={form.companyName} onChange={set('companyName')} />
-            <Input label="Email Address *" type="email" placeholder="admin@example.com" value={form.email} onChange={set('email')} />
+            <Input label="Email Address *" type="email" placeholder="admin@gmail.com" value={form.email} onChange={set('email')} />
             <Input label="Password *" type="password" placeholder="Min 6 characters" value={form.password} onChange={set('password')} />
             <Button type="submit" className="w-full justify-center" loading={loading} size="lg">
               <UserPlus size={16} /> Create Account
