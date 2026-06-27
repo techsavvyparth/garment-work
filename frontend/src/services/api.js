@@ -1,34 +1,5 @@
-import axios from 'axios';
-
-// Toggle to run in pure client-side mock database demo mode
-const IS_DEMO = true; 
-
-const API_URL = import.meta.env.VITE_API_URL || '/api';
-
-const api = axios.create({
-  baseURL: API_URL,
-  timeout: 15000,
-});
-
-// Attach token for backend mode
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
-// Handle auth errors for backend mode
-api.interceptors.response.use(
-  (res) => res,
-  (err) => {
-    if (err.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
-    }
-    return Promise.reject(err);
-  }
-);
+// Client-side localstorage API implementation for Ladies Work Management System
+// This removes all backend and MongoDB dependencies.
 
 // ==========================================
 // CLIENT-SIDE MOCK DATABASE IMPLEMENTATION
@@ -123,9 +94,8 @@ const seedDemoData = () => {
   ]);
 };
 
-if (IS_DEMO) {
-  seedDemoData();
-}
+// Always initialize local database
+seedDemoData();
 
 const uuid = () => Math.random().toString(36).substring(2, 15);
 const mockRes = (data) => Promise.resolve({ data });
@@ -141,17 +111,18 @@ const getLoggedUser = () => {
 };
 
 // ==========================================
-// API ENDPOINTS EXPORT
+// API ENDPOINTS EXPORT (LOCAL STORAGE ONLY)
 // ==========================================
 
-export const authAPI = IS_DEMO ? {
+export const authAPI = {
   login: (data) => {
     const users = getDB('users');
     const user = users.find(u => u.email.toLowerCase() === data.email.toLowerCase());
     if (!user || user.password !== data.password) {
       return mockErr('Invalid email or password', 401);
     }
-    const { password: _, ...safeUser } = user;
+    const safeUser = { ...user };
+    delete safeUser.password;
     localStorage.setItem('token', 'mock-demo-jwt-token');
     localStorage.setItem('user', JSON.stringify(safeUser));
     return mockRes({ success: true, token: 'mock-demo-jwt-token', user: safeUser });
@@ -171,7 +142,8 @@ export const authAPI = IS_DEMO ? {
     };
     users.push(newUser);
     saveDB('users', users);
-    const { password: _, ...safeUser } = newUser;
+    const safeUser = { ...newUser };
+    delete safeUser.password;
     localStorage.setItem('token', 'mock-demo-jwt-token');
     localStorage.setItem('user', JSON.stringify(safeUser));
     return mockRes({ success: true, token: 'mock-demo-jwt-token', user: safeUser });
@@ -189,7 +161,8 @@ export const authAPI = IS_DEMO ? {
     if (idx !== -1) {
       users[idx] = { ...users[idx], ...data };
       saveDB('users', users);
-      const { password: _, ...safeUser } = users[idx];
+      const safeUser = { ...users[idx] };
+      delete safeUser.password;
       localStorage.setItem('user', JSON.stringify(safeUser));
       return mockRes({ success: true, user: safeUser });
     }
@@ -210,15 +183,9 @@ export const authAPI = IS_DEMO ? {
     }
     return mockErr('User not found', 404);
   }
-} : {
-  login: (data) => api.post('/auth/login', data),
-  register: (data) => api.post('/auth/register', data),
-  getMe: () => api.get('/auth/me'),
-  updateProfile: (data) => api.put('/auth/profile', data),
-  changePassword: (data) => api.put('/auth/password', data),
 };
 
-export const ladiesAPI = IS_DEMO ? {
+export const ladiesAPI = {
   getAll: (params) => {
     let ladies = getDB('ladies');
     if (params?.search) {
@@ -265,15 +232,9 @@ export const ladiesAPI = IS_DEMO ? {
     saveDB('ladies', ladies);
     return mockRes({ success: true, data: deleted });
   }
-} : {
-  getAll: (params) => api.get('/ladies', { params }),
-  getById: (id, params) => api.get(`/ladies/${id}`, { params }),
-  create: (data) => api.post('/ladies', data),
-  update: (id, data) => api.put(`/ladies/${id}`, data),
-  delete: (id) => api.delete(`/ladies/${id}`),
 };
 
-export const workAPI = IS_DEMO ? {
+export const workAPI = {
   getAll: (params) => {
     let works = getDB('works');
     if (params?.lady) {
@@ -334,15 +295,9 @@ export const workAPI = IS_DEMO ? {
     const allTypes = [...new Set([...defaultTypes, ...types])].filter(Boolean);
     return mockRes({ success: true, data: allTypes });
   }
-} : {
-  getAll: (params) => api.get('/work', { params }),
-  create: (data) => api.post('/work', data),
-  update: (id, data) => api.put(`/work/${id}`, data),
-  delete: (id) => api.delete(`/work/${id}`),
-  getTypes: () => api.get('/work/types/list'),
 };
 
-export const paymentAPI = IS_DEMO ? {
+export const paymentAPI = {
   getAll: (params) => {
     let payments = getDB('payments');
     if (params?.lady) {
@@ -395,14 +350,9 @@ export const paymentAPI = IS_DEMO ? {
     saveDB('payments', payments);
     return mockRes({ success: true, data: deleted });
   }
-} : {
-  getAll: (params) => api.get('/payments', { params }),
-  create: (data) => api.post('/payments', data),
-  update: (id, data) => api.put(`/payments/${id}`, data),
-  delete: (id) => api.delete(`/payments/${id}`),
 };
 
-export const reportsAPI = IS_DEMO ? {
+export const reportsAPI = {
   getDashboard: () => {
     const ladies = getDB('ladies');
     const works = getDB('works');
@@ -464,7 +414,6 @@ export const reportsAPI = IS_DEMO ? {
   },
   getLadyMonthly: (id) => {
     const works = getDB('works').filter(w => w.lady === id);
-    const payments = getDB('payments').filter(p => p.lady === id);
 
     const monthlyData = {};
     works.forEach(w => {
@@ -497,10 +446,7 @@ export const reportsAPI = IS_DEMO ? {
 
     return mockRes({ success: true, data: pending });
   }
-} : {
-  getDashboard: () => api.get('/reports/dashboard'),
-  getLadyMonthly: (id, params) => api.get(`/reports/lady/${id}/monthly`, { params }),
-  getPending: () => api.get('/reports/pending'),
 };
 
-export default api;
+// Default export dummy object to satisfy any import wildcard checks
+export default {};
