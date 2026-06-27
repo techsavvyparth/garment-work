@@ -1,6 +1,5 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
 const { collection } = require('../utils/jsonDB');
 const { protect } = require('../middleware/auth');
 const router = express.Router();
@@ -18,8 +17,7 @@ router.post('/register', async (req, res) => {
     const exists = Users.findOne({ email: email.toLowerCase() });
     if (exists) return res.status(400).json({ success: false, message: 'Email already registered' });
 
-    const hashed = await bcrypt.hash(password, 12);
-    const user = Users.create({ name, email: email.toLowerCase(), password: hashed, companyName: companyName || 'My Company', role: 'admin' });
+    const user = Users.create({ name, email: email.toLowerCase(), password, companyName: companyName || 'My Company', role: 'admin' });
     
     const { password: _, ...safeUser } = user;
     const token = signToken(user._id);
@@ -40,12 +38,11 @@ router.post('/login', async (req, res) => {
 
     // Fallback for demo admin if not found in database (e.g. read-only filesystem / clean db)
     if (!user && (normalizedEmail === 'admin@gmail.com' || normalizedEmail === 'admin@example.com') && password === 'admin123') {
-      const hashed = await bcrypt.hash('admin123', 12);
       try {
         user = Users.create({
           name: 'Admin User',
           email: normalizedEmail,
-          password: hashed,
+          password: 'admin123',
           companyName: 'Shree Enterprises',
           role: 'admin'
         });
@@ -63,10 +60,9 @@ router.post('/login', async (req, res) => {
 
     if (!user) return res.status(401).json({ success: false, message: 'Invalid email or password' });
 
-    // Skip bcrypt check for our in-memory mock user since we already verified the password above
+    // Skip password check for our in-memory mock user since we already verified the password above
     if (user._id !== 'demo-admin-id-12345') {
-      const match = await bcrypt.compare(password, user.password);
-      if (!match) return res.status(401).json({ success: false, message: 'Invalid email or password' });
+      if (user.password !== password) return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
     const { password: _, ...safeUser } = user;
@@ -100,10 +96,8 @@ router.put('/password', protect, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
     const user = Users.findById(req.user._id);
-    const match = await bcrypt.compare(currentPassword, user.password);
-    if (!match) return res.status(400).json({ success: false, message: 'Current password is incorrect' });
-    const hashed = await bcrypt.hash(newPassword, 12);
-    Users.updateById(req.user._id, { password: hashed });
+    if (user.password !== currentPassword) return res.status(400).json({ success: false, message: 'Current password is incorrect' });
+    Users.updateById(req.user._id, { password: newPassword });
     res.json({ success: true, message: 'Password updated' });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

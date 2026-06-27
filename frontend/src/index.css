@@ -1,11 +1,50 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --color-primary: 124 58 237;
-    --color-accent: 236 72 153;
-  }
+@theme {
+  --color-primary: rgb(124, 58, 237);
+  --color-accent: rgb(236, 72, 153);
+  --color-app-bg: var(--app-bg);
+  --color-text-body: var(--text-body);
+  --color-text-title: var(--text-title);
+  --color-text-muted: var(--text-muted);
+  --color-text-secondary: var(--text-secondary);
+  --color-border-main: var(--border-main);
+  --color-hover-bg: var(--hover-bg);
+}
 
+:root {
+  /* Creamy warm theme variables */
+  --app-bg: #fdfaf2;       /* Creamy warm background, not fully white */
+  --text-body: #57524e;     /* Stone-600 */
+  --text-title: #1c1917;    /* Stone-900 */
+  --text-muted: #878076;    /* Stone-500 */
+  --text-secondary: #57524e; /* Stone-600 */
+  --border-main: #e7e5e4;   /* Stone-200 */
+  --hover-bg: #f5f2eb;      /* Slightly darker creamy */
+  
+  --glass-bg: rgba(255, 255, 255, 0.45);
+  --glass-border: rgba(124, 58, 237, 0.08);
+  --glass-dark-bg: rgba(253, 250, 242, 0.95);
+  --glass-dark-border: rgba(124, 58, 237, 0.15);
+}
+
+.dark {
+  /* Sleek dark theme variables */
+  --app-bg: #0f0a1e;
+  --text-body: #94a3b8;
+  --text-title: #ffffff;
+  --text-muted: #64748b;
+  --text-secondary: #94a3b8;
+  --border-main: rgba(255, 255, 255, 0.08);
+  --hover-bg: rgba(255, 255, 255, 0.05);
+  
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-dark-bg: rgba(0, 0, 0, 0.35);
+  --glass-dark-border: rgba(255, 255, 255, 0.06);
+}
+
+@layer base {
   * {
     box-sizing: border-box;
   }
@@ -14,6 +53,8 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    background-color: var(--app-bg);
+    color: var(--text-body);
   }
 
   ::-webkit-scrollbar {
@@ -33,15 +74,15 @@
 
 @layer utilities {
   .glass {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--glass-bg);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--glass-border);
   }
 
   .glass-dark {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--glass-dark-bg);
     backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--glass-dark-border);
   }
 
   .gradient-text {
@@ -77,4 +118,71 @@
   .shine:hover::after {
     left: 130%;
   }
+}
+
+/* --- Creamy Light Theme CSS Overrides --- */
+
+/* Text colors override for light mode */
+html:not(.dark) .text-white {
+  color: var(--text-title);
+}
+
+/* Preserve actual white for buttons, icons, avatars, badges inside light theme */
+html:not(.dark) button.text-white,
+html:not(.dark) a.text-white,
+html:not(.dark) .bg-gradient-to-r .text-white,
+html:not(.dark) .bg-violet-600 .text-white,
+html:not(.dark) .bg-red-600 .text-white,
+html:not(.dark) .bg-emerald-600 .text-white,
+html:not(.dark) .badge .text-white,
+html:not(.dark) .rounded-full.bg-gradient-to-br .text-white {
+  color: #ffffff !important;
+}
+
+/* Light mode Slate text adjustments for better contrast */
+html:not(.dark) .text-slate-400 {
+  color: var(--text-muted) !important;
+}
+
+html:not(.dark) .text-slate-500 {
+  color: var(--text-secondary) !important;
+}
+
+/* Input placeholder text */
+html:not(.dark) .placeholder-slate-500::placeholder {
+  color: #a8a29e !important;
+}
+
+/* Light mode border color overrides */
+html:not(.dark) .border-white\/5 {
+  border-color: rgba(0, 0, 0, 0.05) !important;
+}
+html:not(.dark) .border-white\/8 {
+  border-color: rgba(0, 0, 0, 0.07) !important;
+}
+html:not(.dark) .border-white\/10 {
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+html:not(.dark) .divide-white\/5 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Light mode background/hover adjustments */
+html:not(.dark) .bg-white\/5 {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+}
+html:not(.dark) .hover\:bg-white\/5:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+html:not(.dark) .hover\:bg-white\/10:hover {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+html:not(.dark) .hover\:bg-white\/3:hover {
+  background-color: rgba(0, 0, 0, 0.02) !important;
+}
+
+/* Recharts grid line color in light mode */
+html:not(.dark) .recharts-cartesian-grid-horizontal line,
+html:not(.dark) .recharts-cartesian-grid-vertical line {
+  stroke: rgba(0, 0, 0, 0.07) !important;
 }
