@@ -13,7 +13,19 @@ const protect = (req, res, next) => {
 
     const decoded = jwt.verify(token, JWT_SECRET);
     const Users = collection('users');
-    const user = Users.findById(decoded.id);
+    let user = Users.findById(decoded.id);
+    
+    // Fallback for demo admin ID if not found in database (e.g. read-only filesystem / clean db)
+    if (!user && decoded.id === 'demo-admin-id-12345') {
+      user = {
+        _id: 'demo-admin-id-12345',
+        name: 'Admin User',
+        email: 'admin@gmail.com',
+        companyName: 'Shree Enterprises',
+        role: 'admin'
+      };
+    }
+
     if (!user) return res.status(401).json({ success: false, message: 'User not found' });
 
     req.user = user;

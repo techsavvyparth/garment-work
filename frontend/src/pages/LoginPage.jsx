@@ -27,6 +27,19 @@ export default function LoginPage() {
     }
   };
 
+  const handleDemoLogin = async () => {
+    setLoading(true);
+    try {
+      await login('admin@gmail.com', 'admin123');
+      toast.success('Welcome back (Demo mode)!');
+      navigate('/dashboard');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Demo login failed');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0F0A1E] flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background decorations */}
@@ -80,6 +93,23 @@ export default function LoginPage() {
             </Button>
           </form>
 
+          <div className="relative flex py-2 items-center my-3">
+            <div className="flex-grow border-t border-white/5"></div>
+            <span className="flex-shrink mx-4 text-slate-500 text-xs uppercase tracking-wider">or</span>
+            <div className="flex-grow border-t border-white/5"></div>
+          </div>
+
+          <Button
+            type="button"
+            variant="secondary"
+            className="w-full justify-center text-violet-300"
+            onClick={handleDemoLogin}
+            loading={loading}
+            size="lg"
+          >
+            <Sparkles size={16} className="text-violet-400 animate-pulse" /> Quick Demo Login
+          </Button>
+
           <div className="mt-5 pt-5 border-t border-white/10 text-center">
             <p className="text-slate-500 text-sm">
               Don't have an account?{' '}
@@ -88,8 +118,9 @@ export default function LoginPage() {
           </div>
 
           {/* Demo credentials hint */}
-          <div className="mt-4 p-3 rounded-xl bg-violet-500/10 border border-violet-500/20">
-            <p className="text-xs text-violet-400 text-center">💡 First time? Register your admin account</p>
+          <div className="mt-4 p-3 rounded-xl bg-violet-500/10 border border-violet-500/20 text-center">
+            <p className="text-xs text-violet-400">💡 Demo Admin Email: <span className="font-semibold select-all text-white">admin@gmail.com</span></p>
+            <p className="text-xs text-violet-400 mt-0.5">Password: <span className="font-semibold select-all text-white">admin123</span></p>
           </div>
         </div>
       </div>

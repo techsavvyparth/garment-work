@@ -5,25 +5,52 @@ const { v4: uuidv4 } = require('uuid');
 
 const DB_FILE = path.join(__dirname, '../data/db.json');
 
+let memoryDB = null;
+
 // Ensure data directory and file exist
 const ensureDB = () => {
-  const dir = path.dirname(DB_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  if (!fs.existsSync(DB_FILE)) {
-    fs.writeFileSync(DB_FILE, JSON.stringify({
-      users: [], ladies: [], works: [], payments: []
-    }, null, 2));
+  try {
+    const dir = path.dirname(DB_FILE);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    if (!fs.existsSync(DB_FILE)) {
+      fs.writeFileSync(DB_FILE, JSON.stringify({
+        users: [], ladies: [], works: [], payments: []
+      }, null, 2));
+    }
+  } catch (err) {
+    if (!memoryDB) {
+      console.warn('⚠️ Warning: Could not write/ensure DB file, using in-memory fallback:', err.message);
+      memoryDB = { users: [], ladies: [], works: [], payments: [] };
+    }
   }
 };
 
 const readDB = () => {
-  ensureDB();
-  return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+  try {
+    ensureDB();
+    if (memoryDB) return memoryDB;
+    return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+  } catch (err) {
+    if (!memoryDB) {
+      console.warn('⚠️ Warning: Could not read DB file, using in-memory fallback:', err.message);
+      memoryDB = { users: [], ladies: [], works: [], payments: [] };
+    }
+    return memoryDB;
+  }
 };
 
 const writeDB = (data) => {
-  ensureDB();
-  fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+  try {
+    ensureDB();
+    if (memoryDB) {
+      memoryDB = data;
+      return;
+    }
+    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.warn('⚠️ Warning: Could not write DB file, using in-memory fallback:', err.message);
+    memoryDB = data;
+  }
 };
 
 // Generic collection operations
